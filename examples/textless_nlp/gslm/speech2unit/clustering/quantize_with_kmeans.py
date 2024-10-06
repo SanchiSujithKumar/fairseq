@@ -6,7 +6,9 @@
 import argparse
 import logging
 import os
-
+import sys
+module_dir = os.path.abspath('/content/fairseq')
+sys.path.insert(0, module_dir)
 import numpy as np
 
 import joblib

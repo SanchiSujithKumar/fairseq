@@ -7,7 +7,10 @@
 import argparse
 import logging
 from pathlib import Path
-
+import os
+import sys
+module_dir = os.path.abspath('/content/fairseq')
+sys.path.insert(0, module_dir)
 import soundfile as sf
 from tqdm import tqdm
 import pandas as pd
