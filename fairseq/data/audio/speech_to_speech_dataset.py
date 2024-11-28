@@ -306,7 +306,8 @@ class SpeechToSpeechDatasetCreator(object):
         audio_root = Path(data_cfg.audio_root)
         ids = [s[cls.KEY_ID] for s in samples]
         src_audio_paths = [
-            (audio_root / s[cls.KEY_SRC_AUDIO]).as_posix() for s in samples
+            s[cls.KEY_SRC_AUDIO] for s in samples
+            # (audio_root / s[cls.KEY_SRC_AUDIO]).as_posix() for s in samples
         ]
         tgt_audio_paths = [
             s[cls.KEY_TGT_AUDIO]

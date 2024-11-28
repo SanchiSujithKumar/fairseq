@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 import os
 import sys
-module_dir = os.path.abspath('/content/fairseq')
+module_dir = os.path.abspath('/content/drive/MyDrive/Project/fairseq')
 sys.path.insert(0, module_dir)
 import soundfile as sf
 from tqdm import tqdm
@@ -36,7 +36,7 @@ def process(args):
 
         # load target units
         target_unit_data = load_units(args.target_dir / f"{split}.txt")
-
+        source_unit_data = load_units(args.source_dir / f"{split}.txt")
         manifest = {c: [] for c in MANIFEST_COLUMNS}
         missing_tgt_audios = []
         src_audios = list(args.source_dir.glob(f"{split}/*.wav"))
@@ -49,7 +49,11 @@ def process(args):
 
             src_n_frames = sf.info(src_audio.as_posix()).frames
             manifest["id"].append(sample_id)
-            manifest["src_audio"].append(src_audio.as_posix())
+
+            source_units = process_units(source_unit_data[sample_id]) # changed here
+            manifest["src_audio"].append(" ".join(source_units)) 
+            # manifest["src_audio"].append(src_audio.as_posix())
+
             manifest["src_n_frames"].append(
                 src_n_frames // 160
             )  # estimation of 10-ms frame for 16kHz audio

@@ -43,6 +43,8 @@ def _collate_frames(
     Returns:
         3D tensor of size len(frames)*len_max*f_dim where len_max is max of L[i]
     """
+    if frames[0].ndim == 1:  # Handle 1D tensors
+        frames = [frame.unsqueeze(1) for frame in frames]
     max_len = max(frame.size(0) for frame in frames)
     if is_audio_input:
         out = frames[0].new_zeros((len(frames), max_len))
@@ -223,21 +225,23 @@ class SpeechToTextDataset(FairseqDataset):
             relevant transforms appplied
         """
         if _is_int_or_np_int(index):
-            source = get_features_or_waveform(
-                self.audio_paths[index],
-                need_waveform=self.cfg.use_audio_input,
-                use_sample_rate=self.cfg.use_sample_rate,
-                waveform_transforms=self.waveform_transforms,
-            )
+            source = np.array(self.audio_paths[index].split(), dtype=float) # changed here
+            # source = get_features_or_waveform(
+            #     self.audio_paths[index],
+            #     need_waveform=self.cfg.use_audio_input,
+            #     use_sample_rate=self.cfg.use_sample_rate,
+            #     waveform_transforms=self.waveform_transforms,
+            # )
         else:
             source = np.concatenate(
                 [
-                    get_features_or_waveform(
-                        self.audio_paths[i],
-                        need_waveform=self.cfg.use_audio_input,
-                        use_sample_rate=self.cfg.use_sample_rate,
-                        waveform_transforms=self.waveform_transforms,
-                    )
+                    np.array(self.audio_paths[index].split(), dtype=float) # changed here
+                    # get_features_or_waveform(
+                    #     self.audio_paths[i],
+                    #     need_waveform=self.cfg.use_audio_input,
+                    #     use_sample_rate=self.cfg.use_sample_rate,
+                    #     waveform_transforms=self.waveform_transforms,
+                    # )
                     for i in index
                 ]
             )
@@ -247,8 +251,8 @@ class SpeechToTextDataset(FairseqDataset):
                 with torch.no_grad():
                     source = F.layer_norm(source, source.shape)
         else:
-            if self.feature_transforms is not None:
-                source = self.feature_transforms(source)
+            # if self.feature_transforms is not None: # changed here
+            #     source = self.feature_transforms(source)
             source = torch.from_numpy(source).float()
         return source
 
@@ -568,7 +572,8 @@ class SpeechToTextDatasetCreator(object):
     ) -> SpeechToTextDataset:
         audio_root = Path(cfg.audio_root)
         ids = [s[cls.KEY_ID] for s in samples]
-        audio_paths = [(audio_root / s[cls.KEY_AUDIO]).as_posix() for s in samples]
+        # audio_paths = [(audio_root / s[cls.KEY_AUDIO]).as_posix() for s in samples]
+        audio_paths = [s[cls.KEY_AUDIO] for s in samples] #changed here
         n_frames = [int(s[cls.KEY_N_FRAMES]) for s in samples]
         tgt_texts = [s[cls.KEY_TGT_TEXT] for s in samples]
         src_texts = [s.get(cls.KEY_SRC_TEXT, cls.DEFAULT_SRC_TEXT) for s in samples]
