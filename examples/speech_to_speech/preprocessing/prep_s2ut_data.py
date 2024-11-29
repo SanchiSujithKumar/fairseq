@@ -36,7 +36,7 @@ def process(args):
 
         # load target units
         target_unit_data = load_units(args.target_dir / f"{split}.txt")
-        source_unit_data = load_units(args.source_dir / f"{split}.txt")
+        source_unit_data = load_units(args.source_dir / f"{split}.txt") # load source units
         manifest = {c: [] for c in MANIFEST_COLUMNS}
         missing_tgt_audios = []
         src_audios = list(args.source_dir.glob(f"{split}/*.wav"))
@@ -50,7 +50,7 @@ def process(args):
             src_n_frames = sf.info(src_audio.as_posix()).frames
             manifest["id"].append(sample_id)
 
-            source_units = process_units(source_unit_data[sample_id]) # changed here
+            source_units = process_units(source_unit_data[sample_id]) # stores source units into manifest dict
             manifest["src_audio"].append(" ".join(source_units)) 
             # manifest["src_audio"].append(src_audio.as_posix())
 

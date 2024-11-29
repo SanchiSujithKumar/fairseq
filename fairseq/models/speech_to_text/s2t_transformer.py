@@ -314,7 +314,7 @@ class S2TTransformerEncoder(FairseqEncoder):
         if self.conv_version == "s2t_transformer":
             self.subsample = Conv1dSubsampler(
                 # args.input_feat_per_channel * args.input_channels,
-                1,
+                1, # number of input channels
                 args.conv_channels,
                 args.encoder_embed_dim,
                 [int(k) for k in args.conv_kernel_sizes.split(",")],
